@@ -12,7 +12,7 @@ By default, an Exasol cluster node reserves ~ 4 GB RAM for UDFs.
 It's the minimum of the DB-RAM (2 GB on a default docker-db, much higher in clusters), a quota for RAM for all processes (~ 32 GB per node) on a node and a quote for the RAM for one SQL session (~ 4 GB per node).
 That's independent of how much RAM is available on that node and on how many CPUs it has.
 That RAM quota is shared by all UDF instances in a query.
-Onn the other hand, for a quick loading parallelization is usually crucial.
+On the other hand, for a quick loading parallelization is usually crucial.
 So in order to be able to run many UDFs at the same time we need to reduce the memory footprint.
 
 ### Custom Loader
@@ -41,7 +41,7 @@ Each datasource implements pushing down predicates to the data source.
 
 Rationale:
 
-Each datasource can have a different API. There is no generic methos for sending the predicates.
+Each datasource can have a different API. There is no generic method for sending the predicates.
 
 Covers:
 
@@ -55,7 +55,7 @@ Needs: dsn per dialect
 
 The Virtual Schema adapter can transform the WHERE clause of a query into a push-down-selection and a post-selection. The push-down selection only contains predicates that can be pushed down to the data source. The post selection is applied after the transfer in the Exasol DB.
 
-The result mus always be exactly the same as if we load the whole table and apply the WHERE clause in the Exasol DB.
+The result must always be exactly the same as if we load the whole table and apply the WHERE clause in the Exasol DB.
 
 Rationale:
 
@@ -75,7 +75,7 @@ This virtual schema offers a `SOURCE_REFERENCE` column that contains the name of
 
 Rationale:
 
-Sometimes that also the filename can contain important information. For example the date of a log file. That's of special relevance when selecting the source via a wildcard and by that the table in Exasol contains data from multiple files.
+Sometimes also the filename can contain important information. For example the date of a log file. That's of special relevance when selecting the source via a wildcard and by that the table in Exasol contains data from multiple files.
 
 By allowing filters on the `SOURCE_REFERENCE` columns we can support a simple filter-pushdown for data sources that can't filter the data properly.
 
