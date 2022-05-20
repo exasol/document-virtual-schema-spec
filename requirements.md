@@ -47,7 +47,7 @@ Covers:
 
 * `feat~filer-pushdown~1`
 
-Needs: dsn per dialect
+Needs: dialectdsn
 
 ### Query Splitting
 

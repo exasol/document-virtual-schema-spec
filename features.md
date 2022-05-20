@@ -30,7 +30,7 @@ The relational model of Exasol does not support nested lists.
 
 The Virtual Schema adapter pushes as many predicates from the WHERE clause as possible down to the data source.
 
-Needs: generic design, design in each variant
+Needs: genericdsn, dialectdsn
 
 ### Support for Different Data Sources
 
