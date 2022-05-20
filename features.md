@@ -46,7 +46,9 @@ We offer Virtual Schema adapter for accessing the following types of No-SQL data
         * from AWS S3
         * from Google Cloud Storage
         * from BucketFS
-
+        * from Azure Blob Storage
+        * from Azure Data Lake Gen2 Storage
+        
 ### Fast Loading for Different Load Patterns
 
 The Virtual Schema performs well for the following load patterns:
