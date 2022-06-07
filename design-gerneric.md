@@ -1,5 +1,30 @@
 # Design for the Generic virtual-schema-common-document
 
+## Project Architecture
+
+We split the project into multiple repositories. The following figure illustrates their relationship. Each class in the diagram represents a repository.
+
+```plantuml
+class dyvs as "dynamodb-virtual-schema"
+class cdf as "virtual-schema-common-document-files"
+class cd as "virtual-schema-common-document"
+class cj as "virtual-schema-common-java"
+
+dyvs <|-- cd
+cdf <|-- cd
+cd <|-- cj
+cd -o "edml-java"
+"s3-document-files-virtual-schema" <|-- cdf
+"google-cloud-storage-document-files-virtual-schema" <|-- cdf
+"…" <|-- cdf
+```
+
+Wouldn't it be easier to put everything in one repository?
+
+> Maybe yes. But that would have the downside that then all the products would have the same release cycle. (We want to use the GitHub UI for listing the releases --> having products with different lifecycle in one repo is too confusing).
+>
+> A different release cycle is important for rolling out changes step by step.
+
 ## Data Loading Using UDFs
 
 `dsn~data-loading-using-udfs~1`
