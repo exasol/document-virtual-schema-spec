@@ -1,0 +1,49 @@
+<h2 id="generic">Generic</h2>
+<h3 id="small-memory-footprint">Small Memory Footprint</h3>
+<p><code>req~small-memory-footprint~1</code></p>
+<p>Keep the required memory footprint for the UDFs low.</p>
+<p>Rationale:</p>
+<p>By default, an Exasol cluster node reserves ~ 4 GB RAM for UDFs. It’s the minimum of the DB-RAM (2 GB on a default docker-db, much higher in clusters), a quota for RAM for all processes (~ 32 GB per node) on a node and a quote for the RAM for one SQL session (~ 4 GB per node). That’s independent of how much RAM is available on that node and on how many CPUs it has. That RAM quota is shared by all UDF instances in a query. On the other hand, for a quick loading parallelization is usually crucial. So in order to be able to run many UDFs at the same time we need to reduce the memory footprint.</p>
+<h3 id="custom-loader">Custom Loader</h3>
+<p><code>req~custom-loader~1</code></p>
+<p>Exasol can’t load the required file types using the IMPORT statement. So we need to implement a custom mechanism for retrieving these files.</p>
+<p>Needs: dsn</p>
+<h3 id="unified-connection-definition">Unified Connection Definition</h3>
+<p><code>req~unified-connection-def~1</code></p>
+<p>The Virtual Schemas use connection parameters specified in the Exasol <a href="https://github.com/exasol/connection-parameter-specification/">connection-parameter-specification</a>.</p>
+<p>Rationale:</p>
+<p>Customers should be able to use the same connection for different Exasol Integration products. Different syntaxes for the same thing are confusing.</p>
+<h3 id="filter-pushdown">Filter Pushdown</h3>
+<p><code>req~filter-pushdown~1</code></p>
+<p>Each datasource implements pushing down predicates to the data source.</p>
+<p>Rationale:</p>
+<p>Each datasource can have a different API. There is no generic method for sending the predicates.</p>
+<p>Covers:</p>
+<ul>
+<li><code>feat~filer-pushdown~1</code></li>
+</ul>
+<p>Needs: dialectdsn</p>
+<h3 id="query-splitting">Query Splitting</h3>
+<p><code>req~query-splitting~1</code></p>
+<p>The Virtual Schema adapter can transform the WHERE clause of a query into a push-down-selection and a post-selection. The push-down selection only contains predicates that can be pushed down to the data source. The post selection is applied after the transfer in the Exasol DB.</p>
+<p>The result must always be exactly the same as if we load the whole table and apply the WHERE clause in the Exasol DB.</p>
+<p>Rationale:</p>
+<p>It depends on the datasource which predicates we can push. Often a query will contain predicates that can be pushed and others that can’t.</p>
+<p>Covers:</p>
+<ul>
+<li><code>feat~filer-pushdown~1</code></li>
+</ul>
+<p>Needs: dsn</p>
+<h3 id="source-reference-column">Source Reference Column</h3>
+<p><code>req~source-reference-column~1</code></p>
+<p>This virtual schema offers a <code>SOURCE_REFERENCE</code> column that contains the name of the file or table the data originates from.</p>
+<p>Rationale:</p>
+<p>Sometimes also the filename can contain important information. For example the date of a log file. That’s of special relevance when selecting the source via a wildcard and by that the table in Exasol contains data from multiple files.</p>
+<p>By allowing filters on the <code>SOURCE_REFERENCE</code> columns we can support a simple filter-pushdown for data sources that can’t filter the data properly.</p>
+<h2 id="files-virtual-schemas">Files Virtual Schemas</h2>
+<h3 id="orthogonal-extension-mechanism-for-file-types-and-storage-backends">Orthogonal Extension Mechanism for file types and storage backends</h3>
+<ul>
+<li><code>req~orthogonal-file-type-and-backend-extension-mechanism~1</code></li>
+</ul>
+<p>The Virtual Schema should support all file types on all data sources. The extension mechanism should be independent. The storage backend implementation should not need to know about the file types and vice versa.</p>
+<p>This is important, since it keeps the implementation effort low. If we have <code>n</code> file types and <code>m</code> storage backends we only need to implement <code>n + m</code> plugins. If it was coupled, it were <code>n * m</code>.</p>

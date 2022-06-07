@@ -1,0 +1,14 @@
+@startuml
+class dyvs as "dynamodb-virtual-schema"
+class cdf as "virtual-schema-common-document-files"
+class cd as "virtual-schema-common-document"
+class cj as "virtual-schema-common-java"
+
+dyvs <|-- cd
+cdf <|-- cd
+cd <|-- cj
+cd -o "edml-java"
+"s3-document-files-virtual-schema" <|-- cdf
+"google-cloud-storage-document-files-virtual-schema" <|-- cdf
+"…" <|-- cdf
+@enduml

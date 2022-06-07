@@ -1,0 +1,46 @@
+<h1 id="features">Features</h1>
+<p><strong>Purpose of this project:</strong> Users can integrate No-SQL data sources into their Exasol database as a Virtual Schema</p>
+<h3 id="mapping-to-fixed-data-types">Mapping to Fixed Data Types</h3>
+<p>The Virtual Schema adapter converts the semi-structured document data into a relational data format.</p>
+<p>That has two main challenges:</p>
+<h4 id="different-data-types-in-each-row">Different data types in each row</h4>
+<p>The virtual schema adapter dynamically converts the source data to the target data type.</p>
+<p>Rationale:</p>
+<p>In semi-structured data, each document can have a different structure. It’s also possible that a property has different types between different documents.</p>
+<h4 id="handle-nested-lists">Handle nested lists</h4>
+<p>The virtual schema adapter can convert nested lists from documents so that they can be processed in Exasol.</p>
+<p>Rationale:</p>
+<p>The relational model of Exasol does not support nested lists.</p>
+<h3 id="filter-push-down">Filter Push-Down</h3>
+<p><code>feat~filer-pushdown~1</code></p>
+<p>The Virtual Schema adapter pushes as many predicates from the WHERE clause as possible down to the data source.</p>
+<p>Needs: genericdsn, dialectdsn</p>
+<h3 id="support-for-different-data-sources">Support for Different Data Sources</h3>
+<p>We offer Virtual Schema adapter for accessing the following types of No-SQL data:</p>
+<ul>
+<li>DynamoDB <!-- `feat~dynamodb~1` --></li>
+<li>Files
+<ul>
+<li>with file types:
+<ul>
+<li>JSON</li>
+<li>JSON-lines</li>
+<li>Parquet</li>
+</ul></li>
+<li>with storage backends
+<ul>
+<li>from AWS S3</li>
+<li>from Google Cloud Storage</li>
+<li>from BucketFS</li>
+<li>from Azure Blob Storage</li>
+<li>from Azure Data Lake Gen2 Storage</li>
+</ul></li>
+</ul></li>
+</ul>
+<h3 id="fast-loading-for-different-load-patterns">Fast Loading for Different Load Patterns</h3>
+<p>The Virtual Schema performs well for the following load patterns:</p>
+<ul>
+<li>Many small files</li>
+<li>One / few big files</li>
+<li>One / few small files</li>
+</ul>

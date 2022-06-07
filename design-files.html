@@ -1,0 +1,9 @@
+<h1 id="design-for-the-virtual-schema-for-document-files">Design for the Virtual Schema for Document Files</h1>
+<h2 id="filter-push-down">Filter Push-Down</h2>
+<p><code>dsn~filet-pushdown~1</code></p>
+<p>For the files Virtual Schema we can not push selection on the data since the backends are just file stores. They don’t support APIs for filtering based on the file content.</p>
+<p>However, often the filename contains some information that can be useful for selecting the correct dataset to load. So the files virtual schemas support <code>=</code> and <code>LIKE</code> predicates on the <code>SOURCE_REFERENCE</code> column.</p>
+<p>Covers:</p>
+<ul>
+<li><code>req~filter-pushdown~1</code></li>
+</ul>

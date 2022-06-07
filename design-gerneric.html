@@ -1,0 +1,43 @@
+<h1 id="design-for-the-generic-virtual-schema-common-document">Design for the Generic virtual-schema-common-document</h1>
+<h2 id="project-architecture">Project Architecture</h2>
+<p>We split the project into multiple repositories. The following figure illustrates their relationship. Each class in the diagram represents a repository.</p>
+<p><img src="plantuml-images/48483f563febe0d2b67c04131100ac4a5c580525.svg" /></p>
+<p>Wouldn’t it be easier to put everything in one repository?</p>
+<blockquote>
+<p>Maybe yes. But that would have the downside that then all the products would have the same release cycle. (We want to use the GitHub UI for listing the releases –&gt; having products with different lifecycle in one repo is too confusing).</p>
+<p>A different release cycle is important for rolling out changes step by step.</p>
+</blockquote>
+<h2 id="data-loading-using-udfs">Data Loading Using UDFs</h2>
+<p><code>dsn~data-loading-using-udfs~1</code></p>
+<p>An Exasol Virtual Schema always rewrites one SQL statement into another SQL statement. It can not directly emit data. This Virtual Schema rewrites the query into a new query that calls Exasol <a href="https://docs.exasol.com/db/latest/database_concepts/udf_scripts.htm">UDFs</a>. The UDFs then fetch the data and emit it. We use this mechanism also for parallelizing. Since Exasol distributes the execution of UDFs over all nodes, that has the advantage that we use the full power of the Exasol cluster for the data loading.</p>
+<p>Another advantage of this approach is that the emit-bandwidth of UDFs has an upper limit. By using multiple UDFs we can emit faster.</p>
+<figure>
+<img src="images/loadingWithUdfs.svg" alt="Diagram showing the data loading with UDFs" /><figcaption>Diagram showing the data loading with UDFs</figcaption>
+</figure>
+<p>Covers:</p>
+<ul>
+<li><code>req~custom-loader~1</code></li>
+</ul>
+<h2 id="pipeline-architecture">Pipeline Architecture</h2>
+<p><code>dsn~pipeline-architecture~1</code></p>
+<p>The Virtual Schema imports the data using a pipeline. That’s important since it must be able to load more data than it fit into the RAM of the UDF.</p>
+<figure>
+<img src="images/pipeline.png" alt="piepline architecture" /><figcaption>piepline architecture</figcaption>
+</figure>
+<p><code>Document Fetcher</code>: dialect specific class that fetches the files, parses them and wraps read documents in a Java class structure.</p>
+<p><code>SchemaMapper</code>: Component in the virtual-schema-common-document that maps the document data to Rows based on the EDML-definition.</p>
+<p>The Pipeline is implemented via <code>Iterators</code>. That means the data is pulled through the pipeline.</p>
+<p>Covers:</p>
+<ul>
+<li><code>req~small-memory-footprint~1</code></li>
+</ul>
+<h3 id="ideas-that-turned-out-not-to-be-the-best">Ideas That Turned out not to be the Best</h3>
+<h4 id="java-streams">Java Streams</h4>
+<p>First we implemented the Pipeline via Java Streams. That turned out to be not a good idea, since the streams had a bad performance as long as we passed many small Objects. This could be solved by junking, but that’s dangerous and complicated.</p>
+<h4 id="akka-strams">Akka Strams</h4>
+<p>Next we tried out <a href="https://doc.akka.io/docs/akka/current/stream/index.html">Akka Streams</a>. The idea was to decouple the loading of files from the processing and emitting so that we can use the time of the downloading for processing other data.</p>
+<p>The first measured performance results were very poor because of synchronization overhead. We could improve it then by chunking the data and only passing the chunks. By that we could again improve the performance but did not reach our goals.</p>
+<p>Chunking is problematic because it increases the memory footprint of the UDFs since more data is in the pipeline at the same time. That again reduces the amount of UDFs we can start. It’s also dangerous since we can’t predict how much memory the reading of a file will allocate. So the virtual-schema adapter could run out of memory.</p>
+<p>Another aspect is that we already parallelize by starting multiple UDFs. So paralleling again adds overhead that turned out not to pay off.</p>
+<h2 id="predicate-pushown">Predicate Pushown</h2>
+<p><code>dsn~predicate-pushdown~1</code></p>
