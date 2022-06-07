@@ -25,9 +25,11 @@ jobs:
           cd gh-pages
           for i in ../*.md
           do
-           destName=$(basename $i)
-           pandoc $i -o ${destName/\.md/.html} --filter pandoc-plantuml;
+           name=$(basename $i)
+           destName="${name/\.md/.html}"
+           pandoc $i -o "$destName" --filter pandoc-plantuml;
           done
+          cp -r ../images/ ./
       - name: Deploy 🚀
         uses: JamesIves/github-pages-deploy-action@v4.3.0
         with:
