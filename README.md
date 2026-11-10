@@ -1,3 +1,6 @@
+> [!IMPORTANT]
+> This project has been archived as of September 8th, 2025 and is no longer supported.
+
 # Specification of the Document Virtual Schema Project
 
 * Features
